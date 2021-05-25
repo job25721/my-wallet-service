@@ -1,12 +1,12 @@
 import mongoose, { Document } from 'mongoose'
 
 export type AccountEvent = 'income' | 'outcome'
-export interface AccountHistory extends Document {
-  type?: AccountEvent
-  subType?: string
-  description?: string
-  date?: Date
-  accountId?: string
+export interface AccountHistory {
+  type: AccountEvent
+  subType: string
+  description: string
+  date: Date
+  accountId: string
 }
 
 const accountHistorySchema = new mongoose.Schema(
@@ -20,7 +20,8 @@ const accountHistorySchema = new mongoose.Schema(
   { versionKey: false }
 )
 
-export default mongoose.model<AccountHistory>(
+export type AccountHistoryDoc = AccountHistory & Document
+export default mongoose.model<AccountHistoryDoc>(
   'accounthistories',
   accountHistorySchema
 )

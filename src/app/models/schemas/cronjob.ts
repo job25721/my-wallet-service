@@ -1,12 +1,12 @@
 import mongoose, { Document } from 'mongoose'
 import { AccountEvent } from './accountHistory'
 
-export interface Cronjob extends Document {
-  executeOnday?: number
-  type?: AccountEvent
-  amount?: number
-  description?: string
-  accountId?: string
+export interface Cronjob {
+  executeOnday: number
+  type: AccountEvent
+  amount: number
+  description: string
+  accountId: string
 }
 const cronjobSchema = new mongoose.Schema(
   {
@@ -19,4 +19,5 @@ const cronjobSchema = new mongoose.Schema(
   { versionKey: false }
 )
 
-export default mongoose.model<Cronjob>('cronjobs', cronjobSchema)
+export type CronjobDoc = Cronjob & Document
+export default mongoose.model<CronjobDoc>('cronjobs', cronjobSchema)

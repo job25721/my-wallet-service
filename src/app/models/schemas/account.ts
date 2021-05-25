@@ -1,10 +1,10 @@
 import mongoose, { Document } from 'mongoose'
 
-export interface Account extends Document {
-  name?: string
-  amount?: number
-  ownerId?: string
-  color?: string
+export interface Account {
+  name: string
+  amount: number
+  ownerId: string
+  color: string
 }
 
 const accountSchema = new mongoose.Schema(
@@ -17,4 +17,5 @@ const accountSchema = new mongoose.Schema(
   { versionKey: false }
 )
 
-export default mongoose.model<Account>('accounts', accountSchema)
+export type AccountDoc = Account & Document
+export default mongoose.model<AccountDoc>('accounts', accountSchema)

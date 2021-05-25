@@ -9,8 +9,13 @@ const mongoConfig = {
   mongoURL: process.env.MONGO_URL || 'mongo://localhost:27017',
   ssl: Boolean(process.env.MONGO_URL) || false,
 }
+const jwtConfig = {
+  secret: process.env.JWT_SECRET,
+  expiry: process.env.JWT_EXPIRY
+}
 export default {
   NODE_PORT,
   API_PREFIX,
   mongoConfig,
+  jwtConfig
 }
