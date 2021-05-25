@@ -1,7 +1,9 @@
-import { UpdateQuery,UpdateWithAggregationPipeline } from 'mongoose'
+import { UpdateQuery, FilterQuery } from 'mongoose'
 import account, { Account, AccountDoc } from './schemas/account'
 
 const create = (data: Account) => account.create(data)
+
+const findOne = (query: FilterQuery<Account>) => account.findOne(query).exec()
 
 const getByUserID = (ownerId: string) => account.find({ ownerId }).exec()
 
@@ -15,6 +17,5 @@ export default {
   getByUserID,
   update,
   remove,
+  findOne,
 }
-
-

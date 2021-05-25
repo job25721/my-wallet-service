@@ -6,9 +6,6 @@ import jwtGenerator from '../libs/tokenGenerate'
 
 const create = async (req: Request<any, any, User>, res: Response) => {
   try {
-    if (!req.body.password) {
-      throw new Error('')
-    }
     const encrypt = bcrypt.hashSync(req.body.password, 10)
     const newUser = await userModel.create({ ...req.body, password: encrypt })
     return res.status(201).json(newUser)
