@@ -1,18 +1,18 @@
 import { FilterQuery } from 'mongoose'
-import userModel, { User } from './schemas/user'
+import user, { User } from './schemas/user'
 
-const all = () => userModel.find().exec()
+const all = () => user.find().exec()
 
-const find = (query: FilterQuery<User>) => userModel.find(query).exec()
+const find = (query: FilterQuery<User>) => user.find(query).exec()
 
-const findByID = (id: string) => userModel.findById(id).exec()
+const findByID = (id: string) => user.findById(id).exec()
 
-const findOne = (query: FilterQuery<User>) => userModel.findOne(query).exec()
+const findOne = (query: FilterQuery<User>) => user.findOne(query).exec()
 
 const update = (id: string, data: User) =>
-  userModel.findByIdAndUpdate(id, data, { new: true }).exec()
+  user.findByIdAndUpdate(id, data, { new: true }).exec()
 
-const create = (data: User) => userModel.create(data)
+const create = (data: User) => user.create(data)
 
 export default {
   all,

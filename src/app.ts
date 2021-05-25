@@ -11,6 +11,7 @@ app.use(cors())
 app.use(express.json())
 
 app.use(config.API_PREFIX, apiRoutes)
+app.get('/healthz', (req, res) => res.json({ status: 'ok' }))
 
 const server = async () => {
   await database.connect()
