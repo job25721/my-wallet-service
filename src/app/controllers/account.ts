@@ -7,6 +7,19 @@ import { AccountEvent, AccountHistory } from '../models/schemas/accountHistory'
 import accountHistoryController from './accountHistory'
 import ENUM from '../enum'
 
+const getByOwner = async (req: Request<any, any, Account>, res: Response) => {
+  const { user } = req
+  try {
+    if (!user) {
+      throw new Error()
+    }
+    const accounts = await accountModel.getByUserID(user._id)
+    return res.status(200).json(accounts)
+  } catch (error) {
+    return res.status(500).send(error.message)
+  }
+}
+
 const create = async (req: Request<any, any, Account>, res: Response) => {
   const createData = req.body
   const ownerId = req.user?._id
@@ -170,4 +183,7 @@ export default {
   create,
   update,
   deleteByID,
+  addIncomeOutcome,
+  moneyTransfer,
+  getByOwner,
 }

@@ -31,6 +31,7 @@ const authorize = async (req: Request<any, any, Auth>, res: Response) => {
     if (!compared) {
       return res.status(402).send('unauthorized')
     }
+    console.log(compared)
     const token = jwtGenerator({
       _id: user._id,
       username: user.username,
