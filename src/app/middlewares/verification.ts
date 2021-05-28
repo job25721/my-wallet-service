@@ -1,15 +1,8 @@
 import { NextFunction, Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
 import config from '../../config'
+import checkAccountOwner from '../libs/checkAccountOwner'
 import { JwtPayload } from '../libs/tokenGenerate'
-
-declare global {
-  namespace Express {
-    interface Request {
-      user?: JwtPayload
-    }
-  }
-}
 
 export default (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -21,12 +14,11 @@ export default (req: Request, res: Response, next: NextFunction) => {
     const token = authorization.replace('Bearer ', '')
     const data = jwt.verify(token, config.jwtConfig.secret || '')
     req.user = JSON.parse(JSON.stringify(data))
-    
     return next()
   } catch (error) {
     if (error instanceof jwt.JsonWebTokenError) {
       return res.status(401).send('unauthorized')
     }
-    return res.status(500).json(error)
+    return res.status(500).send(error.message)
   }
 }

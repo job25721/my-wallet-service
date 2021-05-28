@@ -7,12 +7,7 @@ enum DESCRIPTION_EVENT {
   RECIEVE_TRANSFER = 'รับโอนจาก',
 }
 
-enum ACCOUNT_EVENT {
-  INCOME = 'income',
-  OUTCOME = 'outcome',
-}
 
 export default {
-  DESCRIPTION_EVENT,
-  ACCOUNT_EVENT,
+  DESCRIPTION_EVENT
 }

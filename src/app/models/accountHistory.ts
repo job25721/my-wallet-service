@@ -1,6 +1,10 @@
 import mongoose, { Document } from 'mongoose'
 
-export type AccountEvent = 'income' | 'outcome'
+export enum AccountEvent {
+  INCOME = 'income',
+  OUTCOME = 'outcome',
+}
+
 export interface AccountHistory {
   type: AccountEvent
   subType?: string
@@ -12,7 +16,7 @@ export interface AccountHistory {
 
 const accountHistorySchema = new mongoose.Schema(
   {
-    type: { type: String, enum: ['income', 'outcome'] },
+    type: { type: String, enum: AccountEvent },
     subType: String,
     description: String,
     date: { type: Date, required: true, default: () => new Date() },

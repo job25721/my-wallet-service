@@ -1,7 +1,6 @@
 import { Request, Response } from 'express'
 import bcrypt from 'bcrypt'
-import { User } from '../models/schemas/user'
-import userModel from '../models/userModel'
+import userModel, { User } from '../models/user'
 import jwtGenerator from '../libs/tokenGenerate'
 
 const create = async (req: Request<any, any, User>, res: Response) => {

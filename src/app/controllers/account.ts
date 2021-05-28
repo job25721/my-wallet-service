@@ -1,11 +1,13 @@
 import { Request, Response } from 'express'
 import { UpdateQuery } from 'mongoose'
-import accountHistoryModel from '../models/accountHistoryModel'
-import accountModel from '../models/accountModel'
-import { Account, AccountDoc } from '../models/schemas/account'
-import { AccountEvent, AccountHistory } from '../models/schemas/accountHistory'
-import accountHistoryController from './accountHistory'
+import accountHistoryModel, {
+  AccountEvent,
+  AccountHistory,
+} from '../models/accountHistory'
+import accountModel from '../models/account'
+import { Account, AccountDoc } from '../models/account'
 import ENUM from '../enum'
+import checkAccountOwner from '../libs/checkAccountOwner'
 
 const getByOwner = async (req: Request<any, any, Account>, res: Response) => {
   const { user } = req
@@ -13,7 +15,7 @@ const getByOwner = async (req: Request<any, any, Account>, res: Response) => {
     if (!user) {
       throw new Error()
     }
-    const accounts = await accountModel.getByUserID(user._id)
+    const accounts = await accountModel.find({ ownerId: user._id })
     return res.status(200).json(accounts)
   } catch (error) {
     return res.status(500).send(error.message)
@@ -22,21 +24,35 @@ const getByOwner = async (req: Request<any, any, Account>, res: Response) => {
 
 const create = async (req: Request<any, any, Account>, res: Response) => {
   const createData = req.body
+  const session = req.mongoSession
+  Object.assign(createData, { ownerId: null })
   const ownerId = req.user?._id
   if (ownerId) {
     Object.assign(createData, { ownerId })
   }
   try {
-    const account = await accountModel.create(createData)
-    await accountHistoryModel.create({
-      type: ENUM.ACCOUNT_EVENT.INCOME,
-      description: ENUM.DESCRIPTION_EVENT.INIT_ACCOUNT,
-      amount: account.amount,
-      accountId: account._id,
-      date: new Date(),
-    })
-    return res.status(201).json(account)
+    if (!session) {
+      throw new Error('no session found')
+    }
+    const created = await accountModel.create([createData], { session })
+    await accountHistoryModel.create(
+      [
+        {
+          type: AccountEvent.INCOME,
+          description: ENUM.DESCRIPTION_EVENT.INIT_ACCOUNT,
+          amount: createData.amount,
+          accountId: created[0]._id,
+          date: new Date(),
+        },
+      ],
+      { session }
+    )
+    await session.commitTransaction()
+    session.endSession()
+    return res.status(201).json(created)
   } catch (error) {
+    await session?.abortTransaction()
+    session?.endSession()
     return res.status(500).send(error.message)
   }
 }
@@ -46,26 +62,30 @@ const update = async (
   res: Response
 ) => {
   const { id } = req.params
+  const { user } = req
   try {
+    await checkAccountOwner(user?._id, id)
     const account = await accountModel.findOne({ _id: id })
     if (!account) {
       throw new Error('account not found')
     }
-    const updated = await accountModel.update(id, req.body)
+    const updated = await accountModel.findByIdAndUpdate(id, req.body, {
+      new: true,
+    })
     if (!updated) {
       throw new Error('update failed')
     }
     const diff = updated.amount - account.amount
     if (diff !== 0) {
-      await accountHistoryController.create({
-        type: diff > 0 ? ENUM.ACCOUNT_EVENT.INCOME : ENUM.ACCOUNT_EVENT.OUTCOME,
+      await accountHistoryModel.create({
+        type: diff > 0 ? AccountEvent.INCOME : AccountEvent.OUTCOME,
         description: ENUM.DESCRIPTION_EVENT.UPDATE_ACCOUNT_AMOUNT,
         date: new Date(),
         accountId: id,
         amount: Math.abs(diff),
       })
     }
-    return res.status(204).json(updated)
+    return res.status(200).json(updated)
   } catch (error) {
     let statusCode = 500
     if (error.message === 'account not found') {
@@ -77,10 +97,22 @@ const update = async (
 
 const deleteByID = async (req: Request<{ id: string }>, res: Response) => {
   const { id } = req.params
+  const user = req.user
+  const session = req.mongoSession
+
   try {
-    await accountModel.remove(id)
-    return res.status(200).end()
+    if (!session) {
+      throw new Error('no session found')
+    }
+    await checkAccountOwner(user?._id, id)
+    await accountModel.deleteOne({ _id: id }, { session })
+    await accountHistoryModel.deleteMany({ accountId: id }, { session })
+    await session.commitTransaction()
+    session.endSession()
+    return res.status(200).send('remove success')
   } catch (error) {
+    await session?.abortTransaction()
+    session?.endSession()
     return res.status(500).send(error.message)
   }
 }
@@ -91,7 +123,11 @@ const addIncomeOutcome = async (
 ) => {
   const { id, type } = req.params
   const { amount, date, subType, description } = req.body
+  const session = req.mongoSession
   try {
+    if (!session) {
+      throw new Error('no session found')
+    }
     const account = await accountModel.findOne({ _id: id })
     if (!account) {
       throw new Error('account not found')
@@ -99,27 +135,50 @@ const addIncomeOutcome = async (
     if (!amount || !date) {
       throw new Error('missing required body')
     }
+    if (![AccountEvent.INCOME, AccountEvent.OUTCOME].includes(type)) {
+      throw new Error('none of type enum account event')
+    }
     const updatedAmount =
-      type === ENUM.ACCOUNT_EVENT.INCOME
+      type === AccountEvent.INCOME
         ? account.amount + amount
         : account.amount - amount
     if (updatedAmount < 0) {
       throw new Error('บัญชีเงินไม่พอ')
     }
-    await accountModel.update(id, { amount: updatedAmount })
-    await accountHistoryController.create({
+    await accountModel.findByIdAndUpdate(
+      id,
+      { amount: updatedAmount },
+      { new: true, session }
+    )
+    await accountHistoryModel.create(
+      [
+        {
+          type,
+          description:
+            description ||
+            (type === AccountEvent.INCOME
+              ? ENUM.DESCRIPTION_EVENT.DEFAULT_INCOME
+              : ENUM.DESCRIPTION_EVENT.DEFAULT_OUTCOME),
+          subType: subType || '',
+          date,
+          amount,
+          accountId: id,
+        },
+      ],
+      { session }
+    )
+    await session.commitTransaction()
+    session.endSession()
+    return res.status(200).json({
+      name: account?.name,
+      currentAmount: updatedAmount,
       type,
-      description:
-        description ||
-        (type === ENUM.ACCOUNT_EVENT.INCOME
-          ? ENUM.DESCRIPTION_EVENT.DEFAULT_INCOME
-          : ENUM.DESCRIPTION_EVENT.DEFAULT_OUTCOME),
-      subType: subType || '',
-      date,
-      accountId: id,
       amount,
+      date,
     })
   } catch (error) {
+    await session?.abortTransaction()
+    session?.endSession()
     let statusCode = 500
     if (error.message === 'account not found') {
       statusCode = 404
@@ -150,21 +209,21 @@ const moneyTransfer = async (
     if (account1.amount < amountToTransfer) {
       throw new Error('เงินในบัญชีไม่เพียงพอ')
     }
-    await accountModel.update(fromAccountID, {
+    await accountModel.findByIdAndUpdate(fromAccountID, {
       amount: account1.amount - amountToTransfer,
     })
-    await accountModel.update(toAccountID, {
+    await accountModel.findByIdAndUpdate(toAccountID, {
       amount: account2.amount + amountToTransfer,
     })
-    await accountHistoryController.create({
-      type: ENUM.ACCOUNT_EVENT.OUTCOME,
+    await accountHistoryModel.create({
+      type: AccountEvent.OUTCOME,
       description: ENUM.DESCRIPTION_EVENT.MONEY_TRANSFER + account2.name,
       date: currentDate,
       accountId: account1._id,
       amount: amountToTransfer,
     })
-    await accountHistoryController.create({
-      type: ENUM.ACCOUNT_EVENT.INCOME,
+    await accountHistoryModel.create({
+      type: AccountEvent.INCOME,
       description: ENUM.DESCRIPTION_EVENT.RECIEVE_TRANSFER + account1.name,
       date: currentDate,
       accountId: account2._id,

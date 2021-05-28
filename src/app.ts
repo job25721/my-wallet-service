@@ -5,6 +5,17 @@ import config from './config'
 
 import cors from 'cors'
 import database from './app/connections/mongoose'
+import { JwtPayload } from './app/libs/tokenGenerate'
+import { ClientSession } from 'mongoose'
+
+declare global {
+  namespace Express {
+    interface Request {
+      user?: JwtPayload
+      mongoSession?: ClientSession
+    }
+  }
+}
 
 const app: Application = express()
 

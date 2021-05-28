@@ -1,9 +1,9 @@
 import mongoose from 'mongoose'
 import config from '../../config'
 
-let client: any
+let client: typeof mongoose
 
-const connect = async () => {
+const connect = async (): Promise<typeof mongoose> => {
   const options: mongoose.ConnectOptions = {
     user: config.mongoConfig.user,
     pass: config.mongoConfig.password,
@@ -12,6 +12,7 @@ const connect = async () => {
     useCreateIndex: true,
     useUnifiedTopology: true,
     ssl: config.mongoConfig.ssl,
+    useFindAndModify: true,
   }
   if (!client) {
     try {
