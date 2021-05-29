@@ -9,7 +9,7 @@ import { Account, AccountDoc } from '../models/account'
 import ENUM from '../enum'
 import checkAccountOwner from '../libs/checkAccountOwner'
 
-const getByOwner = async (req: Request<any, any, Account>, res: Response) => {
+const getByOwner = async (req: Request, res: Response) => {
   const { user } = req
   try {
     if (!user) {

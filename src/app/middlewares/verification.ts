@@ -1,8 +1,6 @@
 import { NextFunction, Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
 import config from '../../config'
-import checkAccountOwner from '../libs/checkAccountOwner'
-import { JwtPayload } from '../libs/tokenGenerate'
 
 export default (req: Request, res: Response, next: NextFunction) => {
   try {
