@@ -196,6 +196,7 @@ const moneyTransfer = async (
   res: Response
 ) => {
   const { fromAccountID, toAccountID, amountToTransfer } = req.body
+  const { user } = req
   const currentDate = new Date()
   try {
     if (!fromAccountID || !toAccountID || !amountToTransfer) {
@@ -206,6 +207,7 @@ const moneyTransfer = async (
     if (!account1 || !account2) {
       throw new Error('account not found')
     }
+    await checkAccountOwner(user?._id, account1._id)
     if (account1.amount < amountToTransfer) {
       throw new Error('เงินในบัญชีไม่เพียงพอ')
     }
@@ -229,6 +231,7 @@ const moneyTransfer = async (
       accountId: account2._id,
       amount: amountToTransfer,
     })
+    return res.status(200).send('transfer success')
   } catch (error) {
     let statusCode = 500
     if (error.message === 'account not found') {

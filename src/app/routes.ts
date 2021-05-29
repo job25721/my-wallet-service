@@ -16,8 +16,8 @@ router.put(
   mongoSession,
   accountController.addIncomeOutcome
 )
-router.put('/accounts/:id',verification,accountController.update)
-//money transfer pending..
+router.put('/accounts/:id', verification, accountController.update)
+router.post('/accounts/transfer', verification, accountController.moneyTransfer)
 router.delete(
   '/accounts/:id',
   verification,
