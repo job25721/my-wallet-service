@@ -5,7 +5,7 @@
     "description": "My wallet service",
     "version": "1.0"
   },
-  "host": "my-wallet-service.vercel.app",
+  "host": "my-wallet-service.herokuapp.com",
   "basePath": "/api",
   "produces": ["application/json"],
   "paths": {
