@@ -62,7 +62,9 @@ const getByAccountID = async (
   const { user } = req
   try {
     await checkAccountOwner(user?._id, accountId)
-    const histories = await accountHistoryModel.find({ accountId })
+    const histories = await accountHistoryModel
+      .find({ accountId })
+      .sort({ date: -1 })
     res.status(200).json(histories)
   } catch (error) {
     return res.status(500).send(error.message)
