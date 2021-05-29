@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken'
-import config from '../../config'
+import { jwtConfig } from '../../config'
 export interface JwtPayload {
   _id: string
   username: string
@@ -7,8 +7,8 @@ export interface JwtPayload {
 }
 
 const jwtGenerator = (data: JwtPayload): string =>
-  jwt.sign(data, config.jwtConfig.secret || '', {
-    expiresIn: config.jwtConfig.expiry,
+  jwt.sign(data, jwtConfig.secret || '', {
+    expiresIn: jwtConfig.expiry,
   })
 
 export default jwtGenerator

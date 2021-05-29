@@ -1,23 +1,23 @@
 import mongoose from 'mongoose'
-import config from '../../config'
+import { mongoConfig } from '../../config'
 
 let client: typeof mongoose
 
 const connect = async (): Promise<typeof mongoose> => {
   const options: mongoose.ConnectOptions = {
-    user: config.mongoConfig.user,
-    pass: config.mongoConfig.password,
-    dbName: config.mongoConfig.db,
+    user: mongoConfig.user,
+    pass: mongoConfig.password,
+    dbName: mongoConfig.db,
     useNewUrlParser: true,
     useCreateIndex: true,
     useUnifiedTopology: true,
-    ssl: config.mongoConfig.ssl,
+    ssl: mongoConfig.ssl,
     useFindAndModify: true,
   }
   if (!client) {
     try {
-      client = await mongoose.connect(config.mongoConfig.mongoURL, options)
-      console.log(`mongo connected on ${config.mongoConfig.mongoURL}`)
+      client = await mongoose.connect(mongoConfig.mongoURL, options)
+      console.log(`mongo connected on ${mongoConfig.mongoURL}`)
     } catch (error) {
       console.log(error)
     }

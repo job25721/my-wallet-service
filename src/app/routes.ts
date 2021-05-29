@@ -8,16 +8,16 @@ const router = express.Router()
 router.post('/users/register', userController.create)
 router.post('/users/login', userController.authorize)
 
-router.post('/accounts', verification, mongoSession, accountController.create)
 router.get('/accounts', verification, accountController.getByOwner)
-router.put(
+router.post('/accounts', verification, mongoSession, accountController.create)
+router.post(
   '/accounts/:id/update/:type',
   verification,
   mongoSession,
   accountController.addIncomeOutcome
 )
-router.put('/accounts/:id', verification, accountController.update)
 router.post('/accounts/transfer', verification, accountController.moneyTransfer)
+router.put('/accounts/:id', verification, accountController.update)
 router.delete(
   '/accounts/:id',
   verification,

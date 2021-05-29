@@ -1,0 +1,391 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "My wallet",
+    "description": "My wallet service",
+    "version": "1.0"
+  },
+  "host": "my-wallet-service.vercel.app",
+  "basePath": "/api",
+  "produces": ["application/json"],
+  "paths": {
+    "/users/register": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "register user",
+        "description": "ลงทะเบียนข้อมูลผู้ใช้",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/register"
+            },
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/users/login": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "login user",
+        "description": "เข้าสู้ระบบ my wallet",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/login"
+            },
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/accounts": {
+      "get": {
+        "tags": ["Account"],
+        "summary": "get my all accounts",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Bearer <token>",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {}
+      },
+      "post": {
+        "tags": ["Account"],
+        "summary": "add new account",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Bearer <token>",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/createAccount"
+            },
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/accounts/{id}": {
+      "put": {
+        "tags": ["Account"],
+        "summary": "update account data",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Bearer <token>",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/updateAccount"
+            },
+            "required": true
+          }
+        ],
+        "responses": {}
+      },
+      "delete": {
+        "tags": ["Account"],
+        "summary": "delete account",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Bearer <token>",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/accounts/{id}/update/{type}": {
+      "post": {
+        "tags": ["Account"],
+        "summary": "add account transaction",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Bearer <token>",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "type",
+            "in": "path",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/addIncomeOutcome"
+            },
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/accounts/transfer": {
+      "post": {
+        "tags": ["Account"],
+        "summary": "transfer money to another account",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Bearer <token>",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/moneyTransfer"
+            },
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/histories/{accountId}": {
+      "get": {
+        "tags": ["Account history"],
+        "summary": "get account all transaction",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Bearer <token>",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "accountId",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/histories/{id}": {
+      "put": {
+        "tags": ["Account history"],
+        "summary": "Update transaction by id",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Bearer <token>",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/updateHistory"
+            },
+            "required": true
+          }
+        ],
+        "responses": {}
+      },
+      "delete": {
+        "tags": ["Account history"],
+        "summary": "Delete transaction by id",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Bearer <token>",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    }
+  },
+  "definitions": {
+    "login": {
+      "type": "object",
+      "properties": {
+        "usernameOrEmail": {
+          "type": "string",
+          "example": "myusername",
+          "required": true
+        },
+        "password": {
+          "type": "string",
+          "example": "5555555",
+          "required": true
+        }
+      }
+    },
+    "register": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string",
+          "required": true
+        },
+        "email": {
+          "type": "string",
+          "required": true
+        },
+        "password": {
+          "type": "string",
+          "required": true
+        },
+        "firstName": {
+          "type": "string",
+          "required": true
+        },
+        "lastName": {
+          "type": "string",
+          "required": true
+        }
+      }
+    },
+    "createAccount": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "required": true
+        },
+        "amount": {
+          "type": "number",
+          "required": true
+        },
+        "color": {
+          "type": "string"
+        }
+      }
+    },
+    "updateAccount": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "number"
+        },
+        "color": {
+          "type": "string"
+        }
+      }
+    },
+    "addIncomeOutcome": {
+      "type": "object",
+      "properties": {
+        "amount": {
+          "type": "number",
+          "required": true
+        },
+        "date": {
+          "type": "string",
+          "required": true
+        },
+        "subType": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "moneyTransfer": {
+      "type": "object",
+      "properties": {
+        "fromAccountID": {
+          "type": "string",
+          "required": true
+        },
+        "toAccountID": {
+          "type": "string",
+          "required": true
+        },
+        "amountToTransfer": {
+          "type": "number",
+          "required": true
+        }
+      }
+    },
+    "updateHistory": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "subType": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "string"
+        },
+        "date": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
-import config from '../../config'
+import { jwtConfig } from '../../config'
 
 export default (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -10,7 +10,7 @@ export default (req: Request, res: Response, next: NextFunction) => {
     }
 
     const token = authorization.replace('Bearer ', '')
-    const data = jwt.verify(token, config.jwtConfig.secret || '')
+    const data = jwt.verify(token, jwtConfig.secret || '')
     req.user = JSON.parse(JSON.stringify(data))
     return next()
   } catch (error) {
