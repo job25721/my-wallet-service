@@ -5,7 +5,7 @@
     "description": "My wallet service",
     "version": "1.0"
   },
-  "host": "localhost:8080",
+  "host": "dev-my-wallet-service.herokuapp.com",
   "basePath": "/api",
   "produces": ["application/json"],
   "paths": {
