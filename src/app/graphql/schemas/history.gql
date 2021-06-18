@@ -1,0 +1,12 @@
+enum AccountEvent{
+  income
+  outcome
+}
+type History{
+  type: AccountEvent!
+  subType: String
+  description: String
+  date: String
+  accountId: String!
+  amount: Float!
+}

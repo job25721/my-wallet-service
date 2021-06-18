@@ -9,18 +9,7 @@ import { Account, AccountDoc } from '../models/account'
 import ENUM from '../enum'
 import checkAccountOwner from '../libs/checkAccountOwner'
 
-const getByOwner = async (req: Request, res: Response) => {
-  const { user } = req
-  try {
-    if (!user) {
-      throw new Error()
-    }
-    const accounts = await accountModel.find({ ownerId: user._id })
-    return res.status(200).json(accounts)
-  } catch (error) {
-    return res.status(500).send(error.message)
-  }
-}
+const getByOwner = (_id: string) => accountModel.find({ ownerId: _id }) || []
 
 const create = async (req: Request<any, any, Account>, res: Response) => {
   const createData = req.body

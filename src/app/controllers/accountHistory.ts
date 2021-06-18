@@ -54,22 +54,8 @@ const update = async (
   }
 }
 
-const getByAccountID = async (
-  req: Request<{ accountId: string }>,
-  res: Response
-) => {
-  const { accountId } = req.params
-  const { user } = req
-  try {
-    await checkAccountOwner(user?._id, accountId)
-    const histories = await accountHistoryModel
-      .find({ accountId })
-      .sort({ date: -1 })
-    res.status(200).json(histories)
-  } catch (error) {
-    return res.status(500).send(error.message)
-  }
-}
+const getByAccountID = async (accountId: string) =>
+  accountHistoryModel.find({ accountId }).sort({ date: -1 })
 
 const deleteByID = async (req: Request<{ id: string }>, res: Response) => {
   const { id } = req.params

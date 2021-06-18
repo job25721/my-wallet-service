@@ -1,0 +1,12 @@
+type Account {
+  _id: String!
+  name: String!
+  amount: Float!
+  ownerId: String!
+  color: String!
+  histories: [History]!
+}
+
+type Query {
+  getAccounts: [Account]!
+}
