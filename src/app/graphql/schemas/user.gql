@@ -1,4 +1,13 @@
 type User {
+  _id:String!
+  username: String!
+  email: String
+  password: String!
+  firstName: String!
+  lastName: String!
+}
+
+input CreateUser {
   username: String!
   email: String
   password: String!
@@ -11,10 +20,11 @@ input Auth {
   password: String!
 }
 
-type Query{
-  helloWorld:String!
+type Query {
+  helloWorld: String!
 }
 
 type Mutation {
+  register(user: CreateUser!): User!
   login(auth: Auth!): String!
 }

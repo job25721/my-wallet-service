@@ -1,5 +1,5 @@
 import { IResolvers } from 'graphql-tools'
-import { LoginArgs } from '../types/user'
+import { CreateUserArgs, LoginArgs } from '../types/user'
 import userController from '../../controllers/user'
 
 const userResolver: IResolvers = {
@@ -7,8 +7,8 @@ const userResolver: IResolvers = {
     helloWorld: () => 'Hello world !!!',
   },
   Mutation: {
-    login: async (_: void, args: LoginArgs) =>
-      userController.authorize(args.auth),
+    register: (_: void, args: CreateUserArgs) => userController.create(args.user),
+    login: (_: void, args: LoginArgs) => userController.authorize(args.auth),
   },
 }
 
