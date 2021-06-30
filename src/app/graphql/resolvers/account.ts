@@ -8,6 +8,7 @@ import {
   AccountEvent,
   AddAccountEvent,
   CreateAccountArg,
+  MoneyTrasnferBody,
   UpdateAccountArg,
 } from '../types/account'
 import { GraphqlContext } from '../types/context'
@@ -34,7 +35,7 @@ const accountResolver: IResolvers<Account, GraphqlContext> = {
       await checkAccountOwner(user._id, args.id)
       return accountController.deleteByID(args.id, context.session)
     },
-    AddAccountEvent: async (
+    addAccountEvent: async (
       _: void,
       { id, type, data }: { id: string; type: AccountEvent; data: AddAccountEvent },
       { token, session }
@@ -42,6 +43,11 @@ const accountResolver: IResolvers<Account, GraphqlContext> = {
       const user = await getUser(token)
       await checkAccountOwner(user._id, id)
       return accountController.addIncomeOutcome(id, type, data, session)
+    },
+    moneyTransfer: async (_: void, args: { transferData: MoneyTrasnferBody }, { token }) => {
+      const user = await getUser(token)
+      await checkAccountOwner(user._id, args.transferData.fromAccountID)
+      return accountController.moneyTransfer(args.transferData)
     },
   },
   Account: {

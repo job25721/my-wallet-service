@@ -8,6 +8,7 @@ import {
   AccountEvent,
   AddAccountEvent,
   CreateAccount,
+  MoneyTrasnferBody,
   UpdateAccount,
 } from '../graphql/types/account'
 
@@ -142,54 +143,38 @@ const addIncomeOutcome = async (
   }
 }
 
-const moneyTransfer = async (
-  req: Request<any, any, { fromAccountID: string; toAccountID: string; amountToTransfer: number }>,
-  res: Response
-) => {
-  const { fromAccountID, toAccountID, amountToTransfer } = req.body
-  const { user } = req
+const moneyTransfer = async (transferBody: MoneyTrasnferBody) => {
+  const { fromAccountID, toAccountID, amountToTransfer } = transferBody
   const currentDate = new Date()
-  try {
-    if (!fromAccountID || !toAccountID || !amountToTransfer) {
-      throw new Error('missing required body')
-    }
-    const account1 = await accountModel.findOne({ _id: fromAccountID })
-    const account2 = await accountModel.findOne({ _id: toAccountID })
-    if (!account1 || !account2) {
-      throw new Error('account not found')
-    }
-    await checkAccountOwner(user?._id, account1._id)
-    if (account1.amount < amountToTransfer) {
-      throw new Error('เงินในบัญชีไม่เพียงพอ')
-    }
-    await accountModel.findByIdAndUpdate(fromAccountID, {
-      amount: account1.amount - amountToTransfer,
-    })
-    await accountModel.findByIdAndUpdate(toAccountID, {
-      amount: account2.amount + amountToTransfer,
-    })
-    await accountHistoryModel.create({
-      type: AccountEvent.outcome,
-      description: ENUM.DESCRIPTION_EVENT.MONEY_TRANSFER + account2.name,
-      date: currentDate,
-      accountId: account1._id,
-      amount: amountToTransfer,
-    })
-    await accountHistoryModel.create({
-      type: AccountEvent.income,
-      description: ENUM.DESCRIPTION_EVENT.RECIEVE_TRANSFER + account1.name,
-      date: currentDate,
-      accountId: account2._id,
-      amount: amountToTransfer,
-    })
-    return res.status(200).send('transfer success')
-  } catch (error) {
-    let statusCode = 500
-    if (error.message === 'account not found') {
-      statusCode = 404
-    }
-    return res.status(statusCode).send(error.message)
+  const account1 = await accountModel.findOne({ _id: fromAccountID })
+  const account2 = await accountModel.findOne({ _id: toAccountID })
+  if (!account1 || !account2) {
+    throw new Error('account not found')
   }
+  if (account1.amount < amountToTransfer) {
+    throw new Error('เงินในบัญชีไม่เพียงพอ')
+  }
+  await accountModel.findByIdAndUpdate(fromAccountID, {
+    amount: account1.amount - amountToTransfer,
+  })
+  await accountModel.findByIdAndUpdate(toAccountID, {
+    amount: account2.amount + amountToTransfer,
+  })
+  await accountHistoryModel.create({
+    type: AccountEvent.outcome,
+    description: `${ENUM.DESCRIPTION_EVENT.MONEY_TRANSFER} ${account2.name}`,
+    date: currentDate,
+    accountId: account1._id,
+    amount: amountToTransfer,
+  })
+  await accountHistoryModel.create({
+    type: AccountEvent.income,
+    description: `${ENUM.DESCRIPTION_EVENT.RECIEVE_TRANSFER} ${account1.name}`,
+    date: currentDate,
+    accountId: account2._id,
+    amount: amountToTransfer,
+  })
+  return 'transfer success'
 }
 
 export default {

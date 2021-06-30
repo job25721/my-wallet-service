@@ -19,6 +19,12 @@ input UpdateAccountArg {
   color: String
 }
 
+input MoneyTrasnferArg {
+  fromAccountID: String!
+  toAccountID: String!
+  amountToTransfer: Float!
+}
+
 enum AcoountEvent {
   income
   outcome
@@ -47,5 +53,6 @@ type Mutation {
   createAccount(data: CreateAccountArg!): Account!
   updateAccount(id: String!, data: UpdateAccountArg): Account!
   deleteByID(id: String!): String!
-  AddAccountEvent(id: String!, type: AcoountEvent!, data: AddAccountEvent): AddAccountEventResponse!
+  addAccountEvent(id: String!, type: AcoountEvent!, data: AddAccountEvent): AddAccountEventResponse!
+  moneyTransfer(transferData: MoneyTrasnferArg!): String!
 }

@@ -47,3 +47,9 @@ export type AddAccountEvent = {
   date: Date
   amount: number
 }
+
+export type MoneyTrasnferBody = {
+  fromAccountID: string
+  toAccountID: string
+  amountToTransfer: number
+}

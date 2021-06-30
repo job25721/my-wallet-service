@@ -12,7 +12,7 @@ const connect = async (): Promise<typeof mongoose> => {
     useCreateIndex: true,
     useUnifiedTopology: true,
     ssl: mongoConfig.ssl,
-    useFindAndModify: true,
+    useFindAndModify: false,
   }
   if (!client) {
     try {
