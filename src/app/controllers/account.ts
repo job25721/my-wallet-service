@@ -1,9 +1,7 @@
-import { Request, Response } from 'express'
-import { ClientSession, UpdateQuery } from 'mongoose'
-import accountHistoryModel, { AccountHistory } from '../models/accountHistory'
+import { ClientSession } from 'mongoose'
+import accountHistoryModel from '../models/accountHistory'
 import accountModel from '../models/account'
 import ENUM from '../enum'
-import checkAccountOwner from '../libs/checkAccountOwner'
 import {
   AccountEvent,
   AddAccountEvent,

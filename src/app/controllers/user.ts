@@ -1,9 +1,10 @@
-import { Request, Response } from 'express'
 import bcrypt from 'bcrypt'
-import userModel, { User } from '../models/user'
-import jwtGenerator from '../libs/tokenGenerate'
-import { Auth } from '../graphql/types/user'
-import { AuthenticationError } from 'apollo-server-express'
+import { AuthenticationError, ApolloError } from 'apollo-server-express'
+import jwt from 'jsonwebtoken'
+import { Auth, User } from '../graphql/types/user'
+import userModel, { UserDoc } from '../models/user'
+import jwtGenerator, { JwtPayload } from '../libs/tokenGenerate'
+import { jwtConfig } from '../../config'
 
 const create = async (user: User) => {
   const encrypt = bcrypt.hashSync(user.password, 10)
@@ -30,7 +31,31 @@ const authorize = async (auth: Auth) => {
   return token
 }
 
+const getUser = async (token: string): Promise<UserDoc> => {
+  if (!token) {
+    throw new AuthenticationError('need authorization header')
+  }
+
+  const data = await jwt.verify(
+    token.replace('Bearer ', ''),
+    jwtConfig.secret || '',
+    (err, decoded) => {
+      if (err) {
+        throw new AuthenticationError('invalid token!')
+      }
+      return decoded
+    }
+  )
+  const parsedUser: JwtPayload = JSON.parse(JSON.stringify(data))
+  const foundUser = await userModel.findById(parsedUser._id)
+  if (!foundUser) {
+    throw new ApolloError('no user in dadabase')
+  }
+  return foundUser
+}
+
 export default {
   create,
   authorize,
+  getUser,
 }

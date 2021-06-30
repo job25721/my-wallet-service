@@ -1,22 +1,12 @@
 import express, { Application } from 'express'
 import cors from 'cors'
-import { JwtPayload } from './app/libs/tokenGenerate'
 import { ApolloServer } from 'apollo-server-express'
-import http from 'http'
-
 import { ClientSession } from 'mongoose'
+import http from 'http'
 import { NODE_PORT } from './config'
+import { JwtPayload } from './app/libs/tokenGenerate'
 import database from './app/connections/mongoose'
 import schema from './app/graphql/schema'
-
-declare global {
-  namespace Express {
-    interface Request {
-      user?: JwtPayload
-      mongoSession?: ClientSession
-    }
-  }
-}
 
 const app: Application = express()
 

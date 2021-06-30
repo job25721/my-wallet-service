@@ -1,10 +1,11 @@
 import { IResolvers } from 'graphql-tools'
-import { CreateUserArgs, LoginArgs } from '../types/user'
+import { CreateUserArgs, LoginArgs, User } from '../types/user'
 import userController from '../../controllers/user'
+import { GraphqlContext } from '../types/context'
 
-const userResolver: IResolvers = {
+const userResolver: IResolvers<User, GraphqlContext> = {
   Query: {
-    helloWorld: () => 'Hello world !!!',
+    getMyInfo: (_: void, args, { token }) => userController.getUser(token),
   },
   Mutation: {
     register: (_: void, args: CreateUserArgs) => userController.create(args.user),

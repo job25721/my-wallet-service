@@ -1,12 +1,5 @@
 import mongoose, { Document, Schema } from 'mongoose'
-
-export interface User {
-  username: string
-  email?: string
-  password: string
-  firstName: string
-  lastName: string
-}
+import { User } from '../graphql/types/user'
 
 const userSchema: Schema = new Schema(
   {
