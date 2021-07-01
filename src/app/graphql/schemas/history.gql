@@ -13,7 +13,7 @@ type History {
   amount: Float!
 }
 
-input UpdateHistoryArg{
+input UpdateHistoryArg {
   type: AccountEvent
   subType: String
   description: String
@@ -23,5 +23,6 @@ input UpdateHistoryArg{
 }
 
 type Mutation {
-  updateHistoryByID(id: String!,data:UpdateHistoryArg): History!
+  updateHistoryByID(id: String!, data: UpdateHistoryArg): History!
+  deleteHistoryByID(id: String!): String!
 }

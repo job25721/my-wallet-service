@@ -6,6 +6,7 @@ import checkAccountOwner from '../libs/checkAccountOwner'
 import accountModel from '../models/account'
 import { AccountEvent } from '../graphql/types/account'
 import _enum from '../enum'
+import { ClientSession } from 'mongoose'
 
 const update = async (args: UpdateHistoryArg) => {
   const { id } = args
@@ -59,41 +60,42 @@ const update = async (args: UpdateHistoryArg) => {
 const getByAccountID = async (accountId: string) =>
   accountHistoryModel.find({ accountId }).sort({ date: -1 })
 
-// const deleteByID = async (req: Request<{ id: string }>, res: Response) => {
-//   const { id } = req.params
-//   const { user } = req
-//   try {
-//     const history = await accountHistoryModel.findById(id)
-//     if (!history) {
-//       throw new Error('not found')
-//     }
-//     const accountId = history.accountId
-//     const amountHistory = history.amount
-//     const type = history.type
-//     await checkAccountOwner(user?._id, accountId)
-//     await accountHistoryModel.deleteOne({ _id: id })
-//     const account = await accountModel.findById(accountId)
-//     if (!account) {
-//       throw new Error('not found')
-//     }
-
-//     const updateAmount =
-//       type === AccountEvent.INCOME ? account.amount - amountHistory : account.amount + amountHistory
-//     const updated = await accountModel.findByIdAndUpdate(
-//       accountId,
-//       {
-//         amount: updateAmount,
-//       },
-//       { new: true }
-//     )
-//     res.status(200).json(updated)
-//   } catch (error) {
-//     res.status(500).send(error.message)
-//   }
-// }
+const deleteByID = async (id: string, session: ClientSession) => {
+  try {
+    const history = await accountHistoryModel.findById(id)
+    if (!history) {
+      throw new Error('history not found')
+    }
+    const accountId = history.accountId
+    const amountHistory = history.amount
+    const type = history.type
+    const account = await accountModel.findById(accountId)
+    if (!account) {
+      throw new Error('account not found')
+    }
+    //delete process
+    await accountHistoryModel.deleteOne({ _id: id }, { session })
+    const updateAmount =
+      type === AccountEvent.income ? account.amount - amountHistory : account.amount + amountHistory
+    await accountModel.findByIdAndUpdate(
+      accountId,
+      {
+        amount: updateAmount,
+      },
+      { session }
+    )
+    await session.commitTransaction()
+    session.endSession()
+    return 'Delete history successful'
+  } catch (error) {
+    await session.abortTransaction()
+    session.endSession()
+    throw new ApolloError(error.message)
+  }
+}
 
 export default {
   update,
   getByAccountID,
-  // deleteByID,
+  deleteByID,
 }
