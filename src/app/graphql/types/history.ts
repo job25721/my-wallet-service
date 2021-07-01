@@ -1,6 +1,7 @@
 import { AccountEvent } from './account'
 
 export type AccountHistory = {
+  _id: string
   type: AccountEvent
   subType?: string
   description: string

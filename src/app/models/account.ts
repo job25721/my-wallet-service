@@ -1,11 +1,5 @@
 import mongoose, { Document } from 'mongoose'
-
-export interface Account {
-  name: string
-  amount: number
-  ownerId: string
-  color: string
-}
+import { Account } from '../graphql/types/account'
 
 const accountSchema = new mongoose.Schema(
   {
