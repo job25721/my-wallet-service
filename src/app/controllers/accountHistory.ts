@@ -22,12 +22,19 @@ const update = async (args: UpdateHistoryArg) => {
 
   let updated: AccountHistoryDoc | null = null
   if (typeChanged && !data.description) {
-    Object.assign(data, {
-      description:
+    let assignNewDescription: string = ''
+    if (
+      history.description === _enum.DESCRIPTION_EVENT.DEFAULT_INCOME ||
+      history.description === _enum.DESCRIPTION_EVENT.DEFAULT_OUTCOME
+    ) {
+      assignNewDescription =
         data.type === AccountEvent.income
           ? _enum.DESCRIPTION_EVENT.DEFAULT_INCOME
-          : _enum.DESCRIPTION_EVENT.DEFAULT_OUTCOME,
-    })
+          : _enum.DESCRIPTION_EVENT.DEFAULT_OUTCOME
+    } else {
+      assignNewDescription = history.description
+    }
+    Object.assign(data, { description: assignNewDescription })
   }
   if (Object.keys(data).length > 0) {
     updated = await accountHistoryModel.findByIdAndUpdate(id, data, {
