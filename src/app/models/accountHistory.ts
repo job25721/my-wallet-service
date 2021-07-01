@@ -1,18 +1,6 @@
 import mongoose, { Document } from 'mongoose'
-
-export enum AccountEvent {
-  INCOME = 'income',
-  OUTCOME = 'outcome',
-}
-
-export interface AccountHistory {
-  type: AccountEvent
-  subType?: string
-  description: string
-  date: Date
-  accountId: string
-  amount: number
-}
+import { AccountEvent } from '../graphql/types/account'
+import { AccountHistory } from '../graphql/types/history'
 
 const accountHistorySchema = new mongoose.Schema(
   {
@@ -27,7 +15,4 @@ const accountHistorySchema = new mongoose.Schema(
 )
 
 export type AccountHistoryDoc = AccountHistory & Document
-export default mongoose.model<AccountHistoryDoc>(
-  'accounthistories',
-  accountHistorySchema
-)
+export default mongoose.model<AccountHistoryDoc>('accounthistories', accountHistorySchema)

@@ -7,7 +7,6 @@ enum DESCRIPTION_EVENT {
   RECIEVE_TRANSFER = 'รับโอนจาก',
 }
 
-
 export default {
-  DESCRIPTION_EVENT
+  DESCRIPTION_EVENT,
 }
