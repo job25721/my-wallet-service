@@ -7,6 +7,9 @@
     "esModuleInterop": true,
     "strict": true,
     "allowJs": true,
-    "resolveJsonModule": true
-  }
+    "resolveJsonModule": true,
+    "noUnusedLocals": true,
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "**/*.spec.ts"]
 }

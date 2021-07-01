@@ -1,8 +1,6 @@
 import { ApolloError } from 'apollo-server-express'
-import { Request, Response } from 'express'
 import { UpdateHistoryArg } from '../graphql/types/history'
 import accountHistoryModel, { AccountHistoryDoc } from '../models/accountHistory'
-import checkAccountOwner from '../libs/checkAccountOwner'
 import accountModel from '../models/account'
 import { AccountEvent } from '../graphql/types/account'
 import _enum from '../enum'

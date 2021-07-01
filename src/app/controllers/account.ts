@@ -133,10 +133,6 @@ const addIncomeOutcome = async (
   } catch (error) {
     await session?.abortTransaction()
     session?.endSession()
-    let statusCode = 500
-    if (error.message === 'account not found') {
-      statusCode = 404
-    }
     throw error
   }
 }

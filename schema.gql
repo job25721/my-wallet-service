@@ -1,4 +1,0 @@
-type Account {
-  _id: ID
-  name: String
-}
