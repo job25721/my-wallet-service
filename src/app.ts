@@ -31,7 +31,7 @@ database
   .connect()
   .then(() => {
     server.listen(NODE_PORT, () =>
-      console.log(`server started on ${NODE_PORT}`)
+      console.log(`server started on http://localhost:${NODE_PORT}`)
     )
   })
   .catch((err) => console.error(err))
