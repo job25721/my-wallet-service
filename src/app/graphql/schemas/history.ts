@@ -11,7 +11,7 @@ const historySchema = gql`
     type: AccountEvent!
     subType: String
     description: String
-    date: String
+    date: String!
     accountId: String!
     amount: Float!
   }
