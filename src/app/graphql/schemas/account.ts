@@ -37,14 +37,14 @@ const accountSchema = gql`
     name: String!
     currentAmount: Float!
     type: AcoountEvent!
-    date: String!
+    date: Date!
   }
 
   input AddAccountEvent {
     type: String!
     subType: String
     description: String
-    date: String!
+    date: Date!
     amount: Float!
   }
 
@@ -55,7 +55,7 @@ const accountSchema = gql`
   type Mutation {
     createAccount(data: CreateAccountArg!): Account!
     updateAccount(id: String!, data: UpdateAccountArg): Account!
-    deleteByID(id: String!): String!
+    deleteAccountByID(id: String!): String!
     addAccountEvent(
       id: String!
       type: AcoountEvent!

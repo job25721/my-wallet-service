@@ -1,6 +1,7 @@
 import { gql } from 'apollo-server-express'
 
 const historySchema = gql`
+  scalar Date
   enum AccountEvent {
     income
     outcome
@@ -11,7 +12,7 @@ const historySchema = gql`
     type: AccountEvent!
     subType: String
     description: String
-    date: String!
+    date: Date!
     accountId: String!
     amount: Float!
   }
@@ -20,7 +21,7 @@ const historySchema = gql`
     type: AccountEvent
     subType: String
     description: String
-    date: String
+    date: Date
     accountId: String
     amount: Float
   }

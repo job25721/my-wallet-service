@@ -30,7 +30,7 @@ const accountResolver: IResolvers<Account, GraphqlContext> = {
       await checkAccountOwner(user._id, args.id)
       return accountController.update(args.id, args.data)
     },
-    deleteByID: async (_: void, args: { id: string }, context) => {
+    deleteAccountByID: async (_: void, args: { id: string }, context) => {
       const user = await userController.getUser(context.token)
       await checkAccountOwner(user._id, args.id)
       return accountController.deleteByID(args.id, context.session)
