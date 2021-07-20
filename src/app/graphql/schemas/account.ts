@@ -28,7 +28,7 @@ const accountSchema = gql`
     amountToTransfer: Float!
   }
 
-  enum AcoountEvent {
+  enum AccountEvent {
     income
     outcome
   }
@@ -36,7 +36,7 @@ const accountSchema = gql`
   type AddAccountEventResponse {
     name: String!
     currentAmount: Float!
-    type: AcoountEvent!
+    type: AccountEvent!
     date: Date!
   }
 
@@ -58,7 +58,7 @@ const accountSchema = gql`
     deleteAccountByID(id: String!): String!
     addAccountEvent(
       id: String!
-      type: AcoountEvent!
+      type: AccountEvent!
       data: AddAccountEvent
     ): AddAccountEventResponse!
     moneyTransfer(transferData: MoneyTrasnferArg!): String!
