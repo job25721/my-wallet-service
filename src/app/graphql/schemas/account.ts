@@ -7,7 +7,7 @@ const accountSchema = gql`
     amount: Float!
     ownerId: String!
     color: String!
-    histories: [History]
+    histories: [History!]!
   }
 
   input CreateAccountArg {
@@ -49,7 +49,7 @@ const accountSchema = gql`
   }
 
   type Query {
-    getAccounts: [Account]!
+    getAccounts: [Account!]!
   }
 
   type Mutation {

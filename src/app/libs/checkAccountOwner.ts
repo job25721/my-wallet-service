@@ -5,7 +5,8 @@ export default async (userId?: string, accountId?: string): Promise<void> => {
   if (!foundAccount) {
     throw new Error('no this account id')
   }
-  const isOwner = foundAccount.ownerId === userId
+  const isOwner = foundAccount.ownerId === userId?.toString()
+  
   if (!isOwner) {
     throw new Error("You're not account owner")
   }
